@@ -66,8 +66,8 @@ file.py doThing --long-flag longFlagInput -abc cInput
 | `cli.add_command(name, fn, help=..., aliases=(...))` | Register a command; returns its flag scope |
 | `cli.command(name, ...)` | Decorator form; returns your function unchanged |
 | `cli.add_flag("-n", "--count", type="number", variable="n")` | One flag under several names |
-| `cli.add_short_flag("c", "string", "c_var")` | Short-only flag (`-c`) |
-| `cli.add_long_flag("long-flag", "string", "long_flag")` | Long-only flag (`--long-flag`) |
+| `cli.add_short_flag("c", "string", "c_var")` | Short-only flag; the name must be a single character (`-c`) |
+| `cli.add_long_flag("long-flag", "string", "long_flag")` | Long-only flag; `"count"` and `"--count"` both mean `--count` |
 | `cli.set_default_command(name)` | Allow running with no command name |
 | `cli.parse(argv=None)` | Parse only: returns a `Namespace`, raises `UsageError` (never exits) |
 | `cli.run(argv=None)` | Parse and dispatch the handler; exits `2` on usage errors |
@@ -147,13 +147,14 @@ wrong command scope, missing required flags, and invalid values.
 ## Development
 
 ```powershell
-.venv\Scripts\python -m pytest      # 100 tests
+.venv\Scripts\python -m pytest      # 106 tests
 .venv\Scripts\python -m ruff check .
 .venv\Scripts\python -m ruff format --check .
 ```
 
 `examples/file.py` is the reference CLI; `tests/test_examples.py` runs it as a
-real process to pin exit codes and streams.
+real process to pin exit codes and streams. `parser.py` is at 100% statement
+coverage (99% overall).
 
 Known constraints: nested subcommands, positional specs, `choices`, env/config
 fallback, counted flags, and shell completion are not implemented yet.
