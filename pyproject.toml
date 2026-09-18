@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "garsloppycli"
+name = "garslopcli"
 version = "0.1.0"
 description = "Zero-dependency command and flag parsing for Python CLIs"
 readme = "README.md"
@@ -25,7 +25,7 @@ classifiers = [
 dev = ["pytest>=8", "ruff>=0.6"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/garsloppycli"]
+packages = ["src/garslopcli"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

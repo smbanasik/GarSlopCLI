@@ -2,7 +2,7 @@
 
 import pytest
 
-from garsloppycli import CLI, RegistrationError
+from garslopcli import CLI, RegistrationError
 
 
 def test_render_global_help(cli):

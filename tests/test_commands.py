@@ -3,7 +3,7 @@
 import pytest
 from conftest import make_cli
 
-from garsloppycli import CLI, UsageError
+from garslopcli import CLI, UsageError
 
 
 def test_run_dispatches_and_returns_the_handler_value():
@@ -82,10 +82,10 @@ def test_end_of_options_before_an_unknown_command():
 
 def test_parse_is_usable_without_the_cli_facade():
     """The pure core takes flag/command specs directly; duplicates are caught defensively."""
-    from garsloppycli.errors import RegistrationError
-    from garsloppycli.model import CommandSpec, FlagSpec
-    from garsloppycli.parser import parse
-    from garsloppycli.types import BOOL
+    from garslopcli.errors import RegistrationError
+    from garslopcli.model import CommandSpec, FlagSpec
+    from garslopcli.parser import parse
+    from garslopcli.types import BOOL
 
     go = CommandSpec(name="go", fn=lambda ns: None)
     go.flags.append(FlagSpec(names=("-a",), variable="a_all", kind=BOOL, coerce=None))

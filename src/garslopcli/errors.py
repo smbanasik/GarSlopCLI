@@ -13,15 +13,15 @@ EXIT_OK = 0
 EXIT_USAGE = 2
 
 
-class GarSlopPyCLIError(Exception):
+class GarSlopCLIError(Exception):
     """Base class for every error raised by this library."""
 
 
-class RegistrationError(GarSlopPyCLIError):
+class RegistrationError(GarSlopCLIError):
     """A command or flag was declared in a way the parser cannot represent."""
 
 
-class UsageError(GarSlopPyCLIError):
+class UsageError(GarSlopCLIError):
     """The command line could not be understood.
 
     ``command`` carries the resolved command name when the error happened after
@@ -33,7 +33,7 @@ class UsageError(GarSlopPyCLIError):
         self.command = command
 
 
-class HelpRequested(GarSlopPyCLIError):
+class HelpRequested(GarSlopCLIError):
     """``-h`` / ``--help`` was used. Not an error — control flow for ``run``."""
 
     def __init__(self, command: str | None = None) -> None:
@@ -41,5 +41,5 @@ class HelpRequested(GarSlopPyCLIError):
         self.command = command
 
 
-class VersionRequested(GarSlopPyCLIError):
+class VersionRequested(GarSlopCLIError):
     """``--version`` was used. Not an error — control flow for ``run``."""

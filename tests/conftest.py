@@ -2,7 +2,7 @@
 
 import pytest
 
-from garsloppycli import CLI
+from garslopcli import CLI
 
 
 def make_cli() -> CLI:

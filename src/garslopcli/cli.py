@@ -43,7 +43,7 @@ RESERVED_FLAGS = ("-h", "--help", "--version")
 
 def _package_version() -> str:
     try:
-        return metadata.version("garsloppycli")
+        return metadata.version("garslopcli")
     except metadata.PackageNotFoundError:  # running from a source checkout
         return "0.0.0+unknown"
 

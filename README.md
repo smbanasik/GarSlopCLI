@@ -1,4 +1,4 @@
-# GarSlopPyCLI
+# GarSlopCLI
 
 A zero-dependency Python library that turns a handful of declarations into a full
 command + flag parser.
@@ -26,7 +26,7 @@ Not published to PyPI yet.
 ```python
 #!/usr/bin/env python3
 # file.py
-from garsloppycli import CLI
+from garslopcli import CLI
 
 cli = CLI(prog="file.py", description="Example CLI")
 

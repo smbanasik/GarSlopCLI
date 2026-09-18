@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from garsloppycli import CLI, HelpRequested, UsageError, VersionRequested
+from garslopcli import CLI, HelpRequested, UsageError, VersionRequested
 
 FLAGSHIP = (True, True, "cInput", "longFlagInput")
 

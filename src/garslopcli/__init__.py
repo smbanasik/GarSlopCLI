@@ -1,8 +1,8 @@
-"""GarSlopPyCLI — zero-dependency command and flag parsing for Python CLIs.
+"""GarSlopCLI — zero-dependency command and flag parsing for Python CLIs.
 
 ::
 
-    from garsloppycli import CLI
+    from garslopcli import CLI
 
     cli = CLI(prog="file.py", description="Example CLI")
 
@@ -21,7 +21,7 @@ from .cli import CLI, Command
 from .errors import (
     EXIT_OK,
     EXIT_USAGE,
-    GarSlopPyCLIError,
+    GarSlopCLIError,
     HelpRequested,
     RegistrationError,
     UsageError,
@@ -36,7 +36,7 @@ __all__ = [
     "Command",
     "CommandSpec",
     "FlagSpec",
-    "GarSlopPyCLIError",
+    "GarSlopCLIError",
     "HelpRequested",
     "Namespace",
     "RegistrationError",

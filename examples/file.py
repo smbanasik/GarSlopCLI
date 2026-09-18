@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Reference CLI for GarSlopPyCLI — the flagship example from the project plan.
+"""Reference CLI for GarSlopCLI — the flagship example from the project plan.
 
 python examples/file.py doThing -abc cInput --long-flag longFlagInput
 """
 
-from garsloppycli import CLI
+from garslopcli import CLI
 
 cli = CLI(prog="file.py", description="Example CLI")
 
