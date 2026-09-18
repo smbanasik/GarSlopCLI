@@ -147,14 +147,18 @@ wrong command scope, missing required flags, and invalid values.
 ## Development
 
 ```powershell
-.venv\Scripts\python -m pytest      # 106 tests
+.venv\Scripts\python -m pytest                       # 106 tests
 .venv\Scripts\python -m ruff check .
 .venv\Scripts\python -m ruff format --check .
+.venv\Scripts\python -m coverage run -m pytest        # report: 99 % overall, 100 % parser.py
+.venv\Scripts\python -m coverage report
 ```
 
+CI (`.github/workflows/ci.yml`) runs lint, format check, tests, and the coverage
+report on Windows and Linux with Python 3.14.
+
 `examples/file.py` is the reference CLI; `tests/test_examples.py` runs it as a
-real process to pin exit codes and streams. `parser.py` is at 100% statement
-coverage (99% overall).
+real process to pin exit codes and streams.
 
 Known constraints: nested subcommands, positional specs, `choices`, env/config
 fallback, counted flags, and shell completion are not implemented yet.

@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "coverage>=7"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/garslopcli"]
@@ -38,3 +38,10 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.coverage.run]
+source = ["src/garslopcli"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 95
