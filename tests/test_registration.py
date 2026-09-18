@@ -38,6 +38,17 @@ def test_name_normalization(declared, expected):
     assert cli.add_flag(declared, type="string", variable="v").names == expected
 
 
+def test_explicit_helpers_force_their_shape():
+    """add_short_flag/add_long_flag must not quietly produce the other shape."""
+    cli = CLI(prog="x")
+    assert cli.add_long_flag("count", "number", "n1").names == ("--count",)
+    assert cli.add_long_flag("n", "number", "n2").names == ("--n",)
+    assert cli.add_long_flag("--other", "number", "n3").names == ("--other",)
+    assert cli.add_short_flag("x", "bool", "b1").names == ("-x",)
+    with pytest.raises(RegistrationError, match="short flags are a single alphanumeric"):
+        cli.add_short_flag("long-flag", "bool", "b2")
+
+
 def test_paired_names_and_aliases():
     cli = CLI(prog="x")
     spec = cli.add_flag("-n", "--count", type="number", variable="n", aliases=("--total",))

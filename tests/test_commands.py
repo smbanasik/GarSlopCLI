@@ -20,6 +20,23 @@ def test_run_dispatches_and_returns_the_handler_value():
     assert seen == {"count": 3}
 
 
+def test_command_scope_object_exposes_its_spec():
+    cli = CLI(prog="x")
+
+    def handler(ns):
+        return None
+
+    command = cli.add_command("go", handler, help="Go somewhere", aliases=("g",))
+    assert (command.name, command.help, command.aliases, command.fn) == (
+        "go",
+        "Go somewhere",
+        ("g",),
+        handler,
+    )
+    assert repr(command) == "<Command 'go'>"
+    assert command.add_flag("-n", "--count", type="number", variable="count").kind == "number"
+
+
 def test_zero_argument_handler_is_called_without_arguments():
     cli = CLI(prog="x")
     calls = []
@@ -44,6 +61,55 @@ def test_alias_resolves_to_the_canonical_name():
     cli.add_command("doThing", lambda ns: None, aliases=("dt", "dthing"))
     assert cli.parse(["dt"]).command == "doThing"
     assert cli.parse(["dthing"]).command == "doThing"
+
+
+def test_end_of_options_before_the_command_name():
+    """`-- doThing -a` takes the next token as the command literally, then parses flags."""
+    cli = CLI(prog="x")
+    cli.add_command("doThing", lambda ns: None)
+    cli.add_short_flag("a", "bool", "a_all")
+    ns = cli.parse(["--", "doThing", "-a"])
+    assert ns.command == "doThing"
+    assert ns.a_all is True
+
+
+def test_end_of_options_before_an_unknown_command():
+    cli = CLI(prog="x")
+    cli.add_command("doThing", lambda ns: None)
+    with pytest.raises(UsageError, match="unknown command '--weird'"):
+        cli.parse(["--", "--weird"])
+
+
+def test_parse_is_usable_without_the_cli_facade():
+    """The pure core takes flag/command specs directly; duplicates are caught defensively."""
+    from garsloppycli.errors import RegistrationError
+    from garsloppycli.model import CommandSpec, FlagSpec
+    from garsloppycli.parser import parse
+    from garsloppycli.types import BOOL
+
+    go = CommandSpec(name="go", fn=lambda ns: None)
+    go.flags.append(FlagSpec(names=("-a",), variable="a_all", kind=BOOL, coerce=None))
+    ns = parse(["go", "-a"], prog="x", commands={"go": go}, aliases={})
+    assert ns.a_all is True
+
+    go.flags.append(FlagSpec(names=("-a",), variable="other", kind=BOOL, coerce=None))
+    with pytest.raises(RegistrationError, match="flag name '-a' is declared twice"):
+        parse(["go"], prog="x", commands={"go": go}, aliases={})
+
+
+def test_custom_validator_errors_are_reported_verbatim():
+    def positive(token):
+        value = int(token)
+        if value <= 0:
+            raise RuntimeError("must be positive")
+        return value
+
+    cli = CLI(prog="x")
+    cli.add_command("go", lambda ns: None)
+    cli.add_long_flag("n", positive, "n")
+    assert cli.parse(["go", "--n", "2"]).n == 2
+    with pytest.raises(UsageError, match=r"invalid value for '--n': '-1' \(must be positive\)"):
+        cli.parse(["go", "--n", "-1"])
 
 
 def test_default_command():

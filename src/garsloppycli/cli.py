@@ -48,9 +48,26 @@ def _package_version() -> str:
         return "0.0.0+unknown"
 
 
-def _normalize_flag_name(name: str) -> str:
-    """``"a"`` -> ``-a``; ``"long-flag"`` -> ``--long-flag``; ``"-a"``/``"--x"`` pass through."""
+def _normalize_flag_name(name: str, form: str | None = None) -> str:
+    """Normalize a declared flag name to ``-x`` or ``--long``.
+
+    ``form`` forces the shape (``"short"``/``"long"``) so ``add_short_flag`` and
+    ``add_long_flag`` cannot quietly produce the other shape; ``None`` infers it
+    from the spelling (``"a"`` -> ``-a``, ``"long-flag"`` -> ``--long-flag``).
+    """
     name = name.strip()
+    if form == "short":
+        body = name[1:] if name.startswith("-") and not name.startswith("--") else name
+        if len(body) != 1 or not body.isalnum():
+            raise RegistrationError(
+                f"invalid short flag name {name!r}: short flags are a single alphanumeric character"
+            )
+        return f"-{body}"
+    if form == "long":
+        body = name.lstrip("-")
+        if not body or "=" in body:
+            raise RegistrationError(f"invalid long flag name {name!r}")
+        return f"--{body}"
     if name.startswith("--"):
         body = name[2:]
         if not body or "=" in body or body.startswith("-"):
@@ -105,10 +122,10 @@ class Command:
         return self._cli._register(names, type, variable, scope=self._spec, **kw)
 
     def add_short_flag(self, name: str, type: Any, variable: str, **kw: Any) -> FlagSpec:
-        return self._cli._register((name,), type, variable, scope=self._spec, **kw)
+        return self._cli._register((name,), type, variable, scope=self._spec, form="short", **kw)
 
     def add_long_flag(self, name: str, type: Any, variable: str, **kw: Any) -> FlagSpec:
-        return self._cli._register((name,), type, variable, scope=self._spec, **kw)
+        return self._cli._register((name,), type, variable, scope=self._spec, form="long", **kw)
 
     def __repr__(self) -> str:
         return f"<Command {self.name!r}>"
@@ -181,10 +198,12 @@ class CLI:
         return self._register(names, type, variable, scope=None, **kw)
 
     def add_short_flag(self, name: str, type: Any, variable: str, **kw: Any) -> FlagSpec:
-        return self._register((name,), type, variable, scope=None, **kw)
+        """Short-only flag; the name must be a single alphanumeric character."""
+        return self._register((name,), type, variable, scope=None, form="short", **kw)
 
     def add_long_flag(self, name: str, type: Any, variable: str, **kw: Any) -> FlagSpec:
-        return self._register((name,), type, variable, scope=None, **kw)
+        """Long-only flag; ``"count"`` and ``"--count"`` both mean ``--count``."""
+        return self._register((name,), type, variable, scope=None, form="long", **kw)
 
     def _register(
         self,
@@ -193,6 +212,7 @@ class CLI:
         variable: str,
         *,
         scope: CommandSpec | None,
+        form: str | None = None,
         help: str = "",
         default: Any = None,
         required: bool = False,
@@ -206,7 +226,10 @@ class CLI:
         if not names:
             raise RegistrationError("a flag needs at least one name")
 
-        normalized = tuple(dict.fromkeys(_normalize_flag_name(n) for n in (*names, *aliases)))
+        normalized = tuple(dict.fromkeys(_normalize_flag_name(n, form) for n in names))
+        normalized += tuple(
+            n for n in (_normalize_flag_name(a) for a in aliases) if n not in normalized
+        )
         for name in normalized:
             if name in RESERVED_FLAGS:
                 raise RegistrationError(f"flag name '{name}' is reserved by the library")
