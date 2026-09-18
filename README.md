@@ -154,8 +154,8 @@ wrong command scope, missing required flags, and invalid values.
 .venv\Scripts\python -m coverage report
 ```
 
-CI (`.github/workflows/ci.yml`) runs lint, format check, tests, and the coverage
-report on Windows and Linux with Python 3.14.
+CI is not set up yet — the workflow was deliberately deferred; these commands are
+the intended pipeline.
 
 `examples/file.py` is the reference CLI; `tests/test_examples.py` runs it as a
 real process to pin exit codes and streams.
